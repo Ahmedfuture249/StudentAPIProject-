@@ -34,12 +34,13 @@ namespace StudentAPI
             var averageGrade = StudentDataSimulation.StudentList.Average(student => student.Grade);
             return Ok(averageGrade);
         }
+
+
         [HttpGet("{id}",Name = "GetStudentByID")]
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
-
         public ActionResult<Student> GetStudentById(int id)
         {
             if(id<1)
@@ -55,10 +56,21 @@ namespace StudentAPI
             }
             return Ok(student);
         }
-       
-        
 
+        [HttpPost(Name = "Add Student")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
+        public ActionResult<Student> AddStudent(Student newStudent)
 
+        {
+            if(newStudent==null||string.IsNullOrEmpty(newStudent.Name)||newStudent.Age<0||newStudent.Grade<0)
+            {
+                return BadRequest("invalid student data");
+            }
+            newStudent.Id = StudentDataSimulation.StudentList.Count > 0 ? StudentDataSimulation.StudentList.Max(S=>S.Id) + 1 : 1;
+            StudentDataSimulation.StudentList.Add(newStudent);
+            return CreatedAtRoute("GetStudentByID", new { id = newStudent.Id }, newStudent);
+        }
     }
 }
