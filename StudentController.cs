@@ -26,14 +26,38 @@ namespace StudentAPI
         [HttpGet("AverageGrade",Name = "GetAverageGrade")]
         public ActionResult<double> GetAverageGrade()
         {
-            StudentDataSimulation.StudentList.Clear();
-            if (StudentDataSimulation.StudentList.Count==0)
+            
+            if(StudentDataSimulation.StudentList.Count==0)
             {
                 return NotFound("No students found.");
             }
             var averageGrade = StudentDataSimulation.StudentList.Average(student => student.Grade);
             return Ok(averageGrade);
         }
+        [HttpGet("{id}",Name = "GetStudentByID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+
+        public ActionResult<Student> GetStudentById(int id)
+        {
+            if(id<1)
+            {
+                return BadRequest($"Not accepted ID {id}");
+            }
+            var student = StudentDataSimulation.StudentList.FirstOrDefault(s => s.Id == id)
+                ;
+            if(student==null)
+            {
+                return NotFound($"student with ID {id} not found. ");
+
+            }
+            return Ok(student);
+        }
+       
+        
+
 
 
     }
